@@ -9,6 +9,7 @@
 - GitHub Actions for CI, HACS structure validation and tag-based release ZIP publishing.
 - Home Assistant application repository manifests and migration instructions.
 - Installs Python dependencies before CI/release verification and validates HACS before publishing a release.
+- Uses supported GitHub Actions runtimes and uploads the release ZIP from its hidden build directory, failing CI if the artifact is missing.
 - Reuses private JSON pairing storage for the TV library, avoiding SQLite/pickle deserialization; the transitive dependency advisory is documented in SECURITY.md.
 - Cleans up cancelled pointer connection attempts and sanitizes TV connection/pairing diagnostics.
 - Excludes untracked local credentials and environments from release ZIPs; adds real local WebSocket and packaging regression tests.
