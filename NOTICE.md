@@ -1,8 +1,7 @@
 # Third-party notices
 
-LG webOS Remote for Home Assistant card and bridge code in this package were written separately and are MIT-licensed.
-They **do not include** the source code of `michalowskil/lovelace-touchpad-card`
-(CC BY-NC-ND 4.0). The aim is feature compatibility using new implementation code. This is not a formal clean-room legal certification; review licensing before redistribution.
+LG webOS Remote for Home Assistant is independently implemented and MIT-licensed.
+It does not include source from `michalowskil/lovelace-touchpad-card` (CC BY-NC-ND 4.0).
 
 The Home Assistant app installs, but does not vendor:
 

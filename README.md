@@ -1,103 +1,130 @@
 # LG webOS Remote for Home Assistant
 
-**v1.0.0 — first public release (MIT).**
+A dashboard remote for LG webOS TVs with a Magic Touchpad, app shortcuts, English/Korean text input, and Wake-on-LAN.
 
-Custom Home Assistant remote for LG webOS TVs: Wake-on-LAN power-on, power-off, dedicated pointer connection, swipe/click/scroll, Page Up/Down, Back/Home/Settings, app shortcuts, volume, D-pad and an English/Korean text field.
+**Current release: [v1.0.0](https://github.com/sonim1/ha-webos-remote/releases/tag/v1.0.0)** · **License: [MIT](LICENSE)**
 
-> Community project. Not affiliated with or endorsed by LG Electronics or Home Assistant. Device support varies with model and firmware. Not all features are validated across TV models and apps; no formal security audit has been performed.
+## Remote preview
 
-![LG webOS Remote dashboard preview](docs/ui-preview-v5.png)
+<p align="center">
+  <img src="docs/remote-preview.png" alt="LG webOS remote with app shortcuts, Magic Touchpad, navigation, volume and text input" width="360">
+</p>
 
-*UI preview with sample configuration; no TV or private credentials are shown.*
+The keyboard panel is expanded in this preview. Toggle it with the Keyboard button.
 
 ## Features
 
-- **Remote UI:** icon-only Back, Home, Keyboard and Settings, Power at top-right; Netflix, Internet, YouTube, and Gallery+ shortcuts (based on installed apps), D-pad + OK and vertical volume buttons.
-- **Magic touchpad:** cursor movement, click, mouse wheel, two-finger scroll, Page Up/Down and ×2/×4 pointer sensitivity.
-- **Text entry:** one-line text field and Send / Enter; optional Live (beta) text sync. LG browser accepts IME input on tested hardware; Netflix/YouTube may **not** accept external text injection.
-- **Power:** Wake-on-LAN (requires enabled support and correct TV MAC), plus webOS power-off.
-- **Bridge:** dedicated persistent LG pointer session, local token authentication, first-frame auth with a randomly generated secret. No reliance on the CC BY-NC-ND Lovelace Touchpad Card.
+- **Magic Touchpad:** relative pointer movement, click, mouse wheel, two-finger scroll, Page Up/Down, and 1x/2x/4x sensitivity.
+- **Remote controls:** Back, Home, Settings, D-pad, OK, volume and mute.
+- **Quick Apps:** Netflix, Internet, YouTube and Gallery+, resolved from the TV's installed apps.
+- **Text input:** send English or Korean text with Enter or Send; optional Live mode is experimental.
+- **Power:** Wake-on-LAN when the TV is off and webOS power-off when it is on.
 
-## Installation for users
+## Installation
 
-This package has **two independently installed parts**: a HACS Dashboard card and a Home Assistant **app** (TV bridge). For installation, add this GitHub repository as a *custom repository*. It is not yet listed in the default HACS catalog.
+Install both parts: the **Bridge app** connects to the TV, and the **HACS Dashboard card** connects to the Bridge. Home Assistant OS is supported on aarch64 and amd64, including Raspberry Pi 5.
 
-### 1. Install LG webOS Remote Bridge app
+Use this repository URL for both installations:
 
-Go to **Settings → Apps → Install app** and add this repository URL as a custom Home Assistant app repository; install **LG webOS Remote Bridge**. The repository has `repository.yaml` and `lg_webos_remote/config.yaml` in the expected layout. See [Home Assistant app repository docs](https://developers.home-assistant.io/docs/apps/repository/).
+```text
+https://github.com/sonim1/ha-webos-remote
+```
 
-In the app config enter your own TV IP address, Wi-Fi MAC address, port (default `8788`), broadcast address, and a fresh random authentication token **at least 40 characters long**. Example token generation on a device with Python:
+### 1. Install the Bridge app
+
+1. Open **Settings → Apps → Install app**. Older Home Assistant versions call this **Add-ons**.
+2. Select **⋮ → Repositories**, add the URL above, and install **LG webOS Remote Bridge**.
+3. Open **Configuration**, enter your TV settings, and save:
+
+```yaml
+tv_ip: "YOUR_TV_IP"
+mac_address: "YOUR_TV_WIFI_MAC"
+listen_port: 8788
+broadcast_address: "255.255.255.255"
+auth_token: "YOUR_RANDOM_TOKEN"
+```
+
+Use a random token of at least 40 characters. Generate one on a computer with Python:
 
 ```sh
 python3 -c 'import secrets; print(secrets.token_urlsafe(32))'
 ```
 
-This token must remain secret. Start the app while the TV is awake and approve pairing on the TV if prompted. Rebuild the app after changing its source code; a normal restart does not rebuild the image.
+4. Turn on the TV and select **Start** in the Bridge app. Approve the TV's pairing prompt if shown.
+5. Check the app log for `LG webOS Remote listening on port 8788`. Pairing is stored privately and reused after restarts.
 
-### 2. Install the dashboard card via HACS
+The TV's Wi-Fi MAC is used for Wake-on-LAN. Keep the default broadcast address unless your network requires another value. See [Home Assistant repository installation](https://www.home-assistant.io/common-tasks/os/#installing-a-third-party-app-repository).
 
-In HACS, select **Custom repositories**, paste the same GitHub URL, and select **Dashboard**. Download the card. HACS looks for `ha-webos-remote.js` because the repository is named `ha-webos-remote`. See [HACS Dashboard publication rules](https://www.hacs.dev/docs/publish/plugin/).
+### 2. Install the Dashboard card
 
-If HACS does not register the resource automatically, in **Settings → Dashboards → Resources** add `/hacsfiles/ha-webos-remote/ha-webos-remote.js` as a **JavaScript module**. Restart or reload your dashboard as needed.
+1. Open **HACS → ⋮ → Custom repositories**.
+2. Add the same repository URL and select **Dashboard**.
+3. Find **LG webOS Remote for Home Assistant**, download **v1.0.0**, and reload the browser.
 
-Add a **Manual card**:
+This project is installed as a custom repository; it is not in the HACS default catalog. See [HACS custom repositories](https://www.hacs.dev/docs/faq/custom_repositories/).
+
+If HACS does not add the resource automatically, open **Settings → Dashboards → Resources** and add:
+
+```text
+/hacsfiles/ha-webos-remote/ha-webos-remote.js
+```
+
+Select **JavaScript module**. Register the card resource once.
+
+### 3. Add the remote to your dashboard
+
+Open your dashboard, select **Edit → Add card → Manual**, and paste:
 
 ```yaml
 type: custom:lg-webos-remote
-name: Living Room TV
+name: LG StanbyME Max 2
 url: ws://YOUR_HOME_ASSISTANT_IP:8788
-token: YOUR_PRIVATE_RANDOM_TOKEN
+token: "YOUR_RANDOM_TOKEN"
 sensitivity: 1
 scrollSensitivity: 1
 ```
 
-**Never publish your real `token:` or full dashboard YAML without redaction.** `ws://` is unencrypted; use a trusted LAN only. No internet port forwarding.
+**The card URL uses the Home Assistant IP, not the TV IP.** Its token must match the Bridge's `auth_token`. Replace every placeholder before saving. This release uses the YAML editor; a visual configuration editor is planned.
 
-### Upgrade from an existing local installation
+| Card option | Description | Default |
+| --- | --- | --- |
+| `name` | Display name | `LG webOS TV` |
+| `url` | Bridge WebSocket URL | Required |
+| `token` | Same secret as the Bridge's `auth_token` | Required |
+| `sensitivity` | Pointer movement scale; the 2x/4x buttons multiply it | `1` |
+| `scrollSensitivity` | Desktop mouse-wheel scale | `1` |
 
-If you already installed the pre-GitHub local app and want to preserve its settings and pairing: follow [Upgrade from Alpha 5](docs/UPGRADE_FROM_ALPHA5.md). Do **not** uninstall the existing local app just to switch installation sources; first verify data migration and create a backup. The local app slug and the GitHub repository app may have different installation identities.
+Once connected, the card shows **TV On** or **TV Off · Wake ready**. Power can wake an offline TV without an active TV connection.
 
-## Development
+## Troubleshooting
 
-```sh
-npm run build
-npm run verify
-python3 -m py_compile lg_webos_remote/*.py
-python3 scripts/package.py
-```
+| Symptom | What to check |
+| --- | --- |
+| **Connection error / Disconnected** | Start the Bridge app, check its log, and confirm the card URL uses the Home Assistant IP and configured port. |
+| **Invalid token** | Use the same token in the Bridge and card. The Bridge requires at least 40 characters. |
+| **TV offline** | Check the TV IP and network connectivity. Use Power to wake it; confirm the Wi-Fi MAC and TV remote power-on settings. |
+| **Pairing prompt** | Keep the TV awake and approve Allow. Preserve the app's data when updating. |
+| **Text does not appear** | Focus a compatible text field on the TV. Netflix and YouTube may not accept external text input. |
+| **HTTPS dashboard cannot connect** | Browsers can block plain `ws://` from HTTPS pages. Use a trusted WSS proxy. |
+| **Card still shows an older layout** | Reload the browser and check that only the current HACS resource is registered. |
 
-Requires Node.js 22+ and Python 3.13+ for development. The card has no runtime npm dependencies; the app installs pinned Python requirements. Tests do not require a TV, but **real LG hardware testing is required** for pairing, app discovery, cursor behavior, power, scrolling and IME functionality.
+## Compatibility
 
-Before running these commands, create an isolated Python environment and install the bridge and test dependencies:
+The primary test device is an **LG StanbyME Max 2**. Development testing confirmed pairing, full-screen pointer movement, click, power-on/off, and English/Korean input in the TV browser. Other models and app-specific scroll/text behavior require further testing.
 
-```sh
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install -r lg_webos_remote/requirements.txt pyyaml
-```
+Live input is a beta feature. Long-running pointer stability, reconnection after network interruptions, and broader TV compatibility remain on the [roadmap](docs/ROADMAP.md).
 
-Release packaging requires Git and includes only tracked repository files. Stage new public source files before running `scripts/package.py`; ignored and untracked local files are excluded. Never stage private configuration or credentials.
+Use the Bridge on a trusted local network. Plain `ws://` is unencrypted; keep tokens private and do not expose port 8788 to the internet. See [SECURITY.md](SECURITY.md), including the documented dependency advisory.
 
-## Troubleshooting and compatibility
+## Updates and development
 
-- **Invalid token:** use the same random 40+ character token in the Bridge app options and dashboard card. Never paste it into a public issue.
-- **TV offline:** Power sends Wake-on-LAN without requiring a TV connection. Check the configured Wi-Fi MAC, network connectivity, and TV remote power-on settings.
-- **Pairing:** keep the TV awake and approve its Allow prompt. The private key is stored in `/data/webos-client-key.json` and reused across app restarts. Preserve the app data volume when updating. See [safe local upgrades](docs/UPGRADE_FROM_ALPHA5.md).
-- **Pointer unavailable:** rebuild the Bridge after a code update. `pointer_session.py` must be in the image; the pointer uses its own persistent connection. Avoid running the older port-8777 Bridge during diagnostics.
-- **Text rejected:** focus a compatible TV text field first. English and Korean insertion worked in the development device's browser; Netflix and YouTube may reject external input. Live is experimental.
-- **Card does not update:** check the HACS resource URL, reload the dashboard, and follow the [publishing and installation guide](docs/PUBLISHING.md).
-- **Secure Home Assistant page:** an HTTPS dashboard may block plain `ws://` as mixed content. Use a correctly configured trusted WSS proxy; native TLS termination is not included in the Bridge.
+- [Updating and rollback](docs/UPDATING.md)
+- [Contributing and local development](CONTRIBUTING.md)
+- [Release workflow](docs/PUBLISHING.md)
+- [Changelog](CHANGELOG.md)
 
-### Validation scope
+## License
 
-Development testing on one LG StanbyME Max 2 confirmed pairing, full-screen pointer movement, click, power-on/off, and English/Korean browser input. This is historical hardware evidence, not a claim that this release was retested on hardware during publication.
+This independently implemented project is MIT-licensed. Third-party dependencies and attribution are listed in [NOTICE.md](NOTICE.md). It does not include source from the CC BY-NC-ND Lovelace Touchpad Card project.
 
-Automated checks cover authentication and invalid commands over a real local WebSocket, offline WOL dispatch, pointer registration/session reuse, pairing-key persistence, message payloads, version consistency, and ZIP contents. Long-running TV stability, app-specific scrolling and Page buttons, other TV models, fresh HACS/HAOS installations, and Live text in Netflix/YouTube require further device testing. See [security limitations](SECURITY.md) and the [roadmap](docs/ROADMAP.md).
-
-## Publish on GitHub
-
-See [Publishing guide](docs/PUBLISHING.md) for the repository, CI/HACS validation, creating GitHub releases and the separate Home Assistant installation paths. [Changelog](CHANGELOG.md), [contributing](CONTRIBUTING.md), [security](SECURITY.md), [third-party notices](NOTICE.md).
-
-## Licensing
-
-Project sources are distributed under the [MIT license](LICENSE). `bscpylgtv` is MIT-licensed; `websockets` uses BSD-3-Clause (see NOTICE.md). This package was independently written; it does not contain code from the separately licensed `michalowskil/lovelace-touchpad-card` project. No formal legal or security audit has been performed.
+Community project, unaffiliated with LG Electronics or Home Assistant.
