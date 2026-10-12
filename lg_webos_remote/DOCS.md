@@ -20,7 +20,9 @@ auth_token: "YOUR_RANDOM_TOKEN"
 - `broadcast_address`: keep the default unless your network requires another address.
 - `auth_token`: a random secret of at least 40 characters; use the same value in the card.
 
-Save the configuration and select **Start**. Turn on the TV and approve pairing if prompted. The Bridge saves the TV-issued key privately at `/data/webos-client-key.json` and reuses it after restart.
+Replace all placeholders, save the configuration and select **Start**. Use a new random Bridge token, not a Home Assistant access token or TV pairing key. Turn on the TV and approve pairing if prompted. The Bridge saves the TV-issued key privately at `/data/webos-client-key.json` and reuses it after restart.
+
+Check the **Log** tab for `LG webOS Remote listening on port 8788` (Bridge running) and `TV paired/connected` (TV connection established). Enable **Start on boot** on the **Info** tab for automatic startup.
 
 ## Dashboard card
 
@@ -33,7 +35,7 @@ sensitivity: 1
 scrollSensitivity: 1
 ```
 
-The URL uses the **Home Assistant IP**, not the TV IP. Replace the placeholders with your own values.
+The URL uses the **Home Assistant IP**, not the TV IP. Replace the placeholders with your own values and use the same token as `auth_token`. Use the Bridge port, not port 8123 or a dashboard path. Select **Save** in the card editor; the visual-editor warning is expected.
 
 ## Connection checks
 
@@ -41,6 +43,8 @@ The URL uses the **Home Assistant IP**, not the TV IP. Replace the placeholders 
 - **Invalid token:** match the card token to `auth_token`.
 - **TV Off · Wake ready:** the Bridge is connected; use Power to wake the TV.
 - **Pairing unavailable:** turn on the TV, check its IP and approve the Allow prompt.
+
+With the TV on, confirm **TV On** and test Home, volume, and pointer movement in the TV browser. Test power-off and wake separately: **Wake ready** offers a wake action but does not guarantee the TV's network wake support.
 
 Preserve app configuration and data during updates. Use a trusted local network; plain `ws://` is unencrypted. HTTPS dashboards may require a WSS proxy. Do not expose the Bridge directly to the internet or share tokens/pairing keys.
 
