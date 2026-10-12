@@ -77,7 +77,7 @@ class PointerSession:
             self.pointer = await asyncio.wait_for(
                 connect(path, ssl=pointer_tls, origin='https://www.lge.com',
                         ping_interval=20, close_timeout=2, open_timeout=5), timeout=7)
-        except Exception:
+        except (Exception, asyncio.CancelledError):
             await self.close()
             raise
 

@@ -18,13 +18,14 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+      - name: Install Python dependencies
+        run: python -m pip install -r lg_webos_remote/requirements.txt pyyaml
       - run: npm run build
       - run: npm run verify
       - run: |
           python -m py_compile lg_webos_remote/server.py lg_webos_remote/protocol.py lg_webos_remote/pairing.py lg_webos_remote/pointer_session.py
           python scripts/package.py
       - run: |
-          python -m pip install pyyaml
           python - <<'PY'
           import yaml
           from pathlib import Path
@@ -48,3 +49,4 @@ jobs:
       - uses: hacs/action@main
         with:
           category: plugin
+          comment: false

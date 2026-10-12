@@ -1,4 +1,9 @@
 FROM ghcr.io/home-assistant/base:latest
+ARG BUILD_VERSION=1.0.0
+ARG BUILD_ARCH
+LABEL io.hass.version="$BUILD_VERSION" \
+      io.hass.type="app" \
+      io.hass.arch="$BUILD_ARCH"
 SHELL ["/bin/ash", "-o", "pipefail", "-c"]
 WORKDIR /opt/ha-webos-remote
 RUN apk add --no-cache python3 py3-virtualenv \

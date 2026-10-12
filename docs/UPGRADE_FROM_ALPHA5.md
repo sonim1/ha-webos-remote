@@ -18,6 +18,9 @@ cp -a /config/ha-webos-v100/ha-webos-remote/lg_webos_remote/. /local_apps/lg_web
 ```
 
 3. From Settings → Apps → LG webOS Remote Bridge: **Rebuild**, then **Start**. The app reports version `1.0.0` and should reuse your existing configuration and private pairing key.
+
+The private JSON key at `/data/webos-client-key.json` keeps its format and path. v1.0.0 uses this file for the library's storage as well; it does not read, import, or delete an old `pairing.sqlite`. Keep the app data volume and existing options. If the JSON key is missing, the TV must approve a new pairing; do not copy credentials from an unrelated Bridge.
+
 4. Back up and update the dashboard JavaScript:
 
 ```sh
@@ -30,3 +33,5 @@ cp /config/ha-webos-v100/ha-webos-remote/ha-webos-remote.js /config/www/ha-webos
 6. Confirm pairing, mouse cursor, clicks, directional/volume keys, app shortcuts, power-on/off and optional Live typing. TV model compatibility remains unverified outside devices actually tested.
 
 **Never** paste your token or pairing key into a support issue.
+
+If the update fails, stop the Bridge, restore the backed-up source files to the same local app directory, rebuild, and start it. Restore the backed-up dashboard JavaScript and refresh its resource. Preserve app options and `/data` throughout rollback. Installing from the GitHub app repository may create a separate app identity; do not uninstall the local app until you have verified the new installation and a backup.

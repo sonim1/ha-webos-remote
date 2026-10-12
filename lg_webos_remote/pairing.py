@@ -8,6 +8,8 @@ import asyncio
 import json
 import os
 import ssl
+from collections.abc import Mapping
+from dataclasses import dataclass
 from pathlib import Path
 
 from websockets.asyncio.client import connect
@@ -38,6 +40,8 @@ def pairing_manifest():
 def load_pairing_key(path):
     try:
         data = json.loads(Path(path).read_text(encoding='utf-8'))
+        if not isinstance(data, dict):
+            return None
         key = data.get('client_key')
         return key if isinstance(key, str) and key else None
     except (FileNotFoundError, OSError, ValueError, TypeError):
@@ -81,8 +85,26 @@ def pairing_event(reply, previous_key=None):
     if kind == 'error':
         code = reply.get('errorCode', reply.get('error', 'unknown'))
         # Don't include arbitrary TV-supplied text in errors/logs.
-        return 'error', str(code)[:32] if isinstance(code, (int, str)) else 'unknown'
+        safe_code = str(code)
+        return 'error', safe_code if safe_code.isascii() and safe_code.isdigit() and len(safe_code) <= 32 else 'unknown'
     return 'other', None
+
+
+@dataclass(frozen=True, slots=True)
+class PairingKeyStorage:
+    path: Path
+    tv_ip: str
+
+    async def get_key(self, key: str) -> str | None:
+        return load_pairing_key(self.path) if key == self.tv_ip else None
+
+    async def set_key(self, key: str, val: str | None) -> None:
+        if key == self.tv_ip and val is not None:
+            save_pairing_key(self.path, val)
+
+    async def list_keys(self) -> Mapping[str, str]:
+        key = load_pairing_key(self.path)
+        return {self.tv_ip: key} if key is not None else {}
 
 
 async def pair_with_tv(ip, *, timeout=32):

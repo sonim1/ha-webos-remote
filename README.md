@@ -6,6 +6,10 @@ Custom Home Assistant remote for LG webOS TVs: Wake-on-LAN power-on, power-off, 
 
 > Community project. Not affiliated with or endorsed by LG Electronics or Home Assistant. Device support varies with model and firmware. Not all features are validated across TV models and apps; no formal security audit has been performed.
 
+![LG webOS Remote dashboard preview](docs/ui-preview-v5.png)
+
+*UI preview with sample configuration; no TV or private credentials are shown.*
+
 ## Features
 
 - **Remote UI:** icon-only Back, Home, Keyboard and Settings, Power at top-right; Netflix, Internet, YouTube, and Gallery+ shortcuts (based on installed apps), D-pad + OK and vertical volume buttons.
@@ -63,6 +67,32 @@ python3 scripts/package.py
 ```
 
 Requires Node.js 22+ and Python 3.13+ for development. The card has no runtime npm dependencies; the app installs pinned Python requirements. Tests do not require a TV, but **real LG hardware testing is required** for pairing, app discovery, cursor behavior, power, scrolling and IME functionality.
+
+Before running these commands, create an isolated Python environment and install the bridge and test dependencies:
+
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -r lg_webos_remote/requirements.txt pyyaml
+```
+
+Release packaging requires Git and includes only tracked repository files. Stage new public source files before running `scripts/package.py`; ignored and untracked local files are excluded. Never stage private configuration or credentials.
+
+## Troubleshooting and compatibility
+
+- **Invalid token:** use the same random 40+ character token in the Bridge app options and dashboard card. Never paste it into a public issue.
+- **TV offline:** Power sends Wake-on-LAN without requiring a TV connection. Check the configured Wi-Fi MAC, network connectivity, and TV remote power-on settings.
+- **Pairing:** keep the TV awake and approve its Allow prompt. The private key is stored in `/data/webos-client-key.json` and reused across app restarts. Preserve the app data volume when updating. See [safe local upgrades](docs/UPGRADE_FROM_ALPHA5.md).
+- **Pointer unavailable:** rebuild the Bridge after a code update. `pointer_session.py` must be in the image; the pointer uses its own persistent connection. Avoid running the older port-8777 Bridge during diagnostics.
+- **Text rejected:** focus a compatible TV text field first. English and Korean insertion worked in the development device's browser; Netflix and YouTube may reject external input. Live is experimental.
+- **Card does not update:** check the HACS resource URL, reload the dashboard, and follow the [publishing and installation guide](docs/PUBLISHING.md).
+- **Secure Home Assistant page:** an HTTPS dashboard may block plain `ws://` as mixed content. Use a correctly configured trusted WSS proxy; native TLS termination is not included in the Bridge.
+
+### Validation scope
+
+Development testing on one LG StanbyME Max 2 confirmed pairing, full-screen pointer movement, click, power-on/off, and English/Korean browser input. This is historical hardware evidence, not a claim that this release was retested on hardware during publication.
+
+Automated checks cover authentication and invalid commands over a real local WebSocket, offline WOL dispatch, pointer registration/session reuse, pairing-key persistence, message payloads, version consistency, and ZIP contents. Long-running TV stability, app-specific scrolling and Page buttons, other TV models, fresh HACS/HAOS installations, and Live text in Netflix/YouTube require further device testing. See [security limitations](SECURITY.md) and the [roadmap](docs/ROADMAP.md).
 
 ## Publish on GitHub
 

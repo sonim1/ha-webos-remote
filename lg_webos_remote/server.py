@@ -12,8 +12,7 @@ import socket
 from pathlib import Path
 
 from bscpylgtv import WebOsClient
-from bscpylgtv.storage_sqlitedict import StorageSqliteDict
-from pairing import PairingError, pairing_manifest, load_pairing_key, save_pairing_key, pair_with_tv
+from pairing import PairingError, PairingKeyStorage, pairing_manifest, load_pairing_key, save_pairing_key, pair_with_tv
 from pointer_session import PointerSession
 from websockets.asyncio.server import serve
 from websockets.exceptions import ConnectionClosed
@@ -48,7 +47,7 @@ class LGWebOSRemoteServer:
                 try:
                     await self._connect()
                 except Exception as exc:
-                    reason = str(exc) or type(exc).__name__
+                    reason = str(exc) if isinstance(exc, PairingError) else type(exc).__name__
                     if reason != self.last_error:
                         LOG.info('TV connection unavailable; retrying (%s)', reason[:180])
                         self.last_error = reason
@@ -77,7 +76,7 @@ class LGWebOSRemoteServer:
             save_pairing_key(key_path, key)
             LOG.info('TV pairing credentials saved privately')
 
-        storage = await StorageSqliteDict.create(str(DATA / 'pairing.sqlite'))
+        storage = PairingKeyStorage(key_path, self.tv_ip)
         client = await WebOsClient.create(
             self.tv_ip, client_key=key, storage=storage,
             states=[], ping_interval=None, timeout_connect=4,
@@ -98,7 +97,7 @@ class LGWebOSRemoteServer:
         self.client = client
         self.online = True
         self.last_error = ''
-        LOG.info('TV paired/connected to %s', self.tv_ip)
+        LOG.info('TV paired/connected')
         await self._refresh_apps()
         await self._notify_status()
 

@@ -15,11 +15,17 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
+      - name: Install Python dependencies
+        run: python -m pip install -r lg_webos_remote/requirements.txt pyyaml
       - name: Verify version tag
         run: |
           test "v$(cat VERSION)" = "$GITHUB_REF_NAME"
       - run: npm run build
       - run: npm run verify
+      - uses: hacs/action@main
+        with:
+          category: plugin
+          comment: false
       - run: python scripts/package.py
       - name: Publish GitHub Release
         env:

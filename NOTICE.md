@@ -11,6 +11,11 @@ The Home Assistant app installs, but does not vendor:
   https://github.com/chros73/bscpylgtv/blob/master/LICENSE.txt
 - [`websockets`](https://github.com/python-websockets/websockets), BSD-3-Clause;
   licenses are maintained by the upstream package.
+- [`sqlitedict`](https://github.com/RaRe-Technologies/sqlitedict), Apache-2.0,
+  copyright 2011-present Radim Rehurek and contributors; installed transitively
+  by bscpylgtv. The Bridge uses its own JSON pairing storage instead of this
+  library's SQLite storage. Full license:
+  https://github.com/RaRe-Technologies/sqlitedict/blob/master/LICENSE.md
 
 You must preserve applicable notices when distributing bundled copies of any
 upstream libraries. LG and webOS are trademarks of their respective owners;

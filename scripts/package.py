@@ -1,17 +1,21 @@
 """Build a release ZIP that can be uploaded to Home Assistant Studio Code Server."""
-import os
 from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
-import sys
+import subprocess
 
 root = Path(__file__).resolve().parents[1]
 version = (root / 'VERSION').read_text().strip()
 archive = root / '.release' / f'ha-webos-remote-v{version}.zip'
 archive.parent.mkdir(parents=True, exist_ok=True)
-exclude = {'.git','.release','__pycache__','node_modules'}
+files = subprocess.run(
+    ['git', 'ls-files', '-z'], cwd=root, check=True, capture_output=True, text=True,
+).stdout.split('\0')
 with ZipFile(archive, 'w', ZIP_DEFLATED) as zf:
-    for path in sorted(root.rglob('*')):
-        if not path.is_file() or any(x in exclude for x in path.relative_to(root).parts) or path.suffix in {'.pyc','.sqlite'}:
+    for name in sorted(filter(None, files)):
+        path = root / name
+        if path.is_symlink():
+            raise RuntimeError(f'Release source must not be a symbolic link: {name}')
+        if path.suffix in {'.pyc', '.sqlite'}:
             continue
-        zf.write(path, f'ha-webos-remote/{path.relative_to(root)}')
+        zf.write(path, f'ha-webos-remote/{name}')
 print(archive)

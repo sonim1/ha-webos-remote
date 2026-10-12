@@ -8,6 +8,10 @@
 - [x] Netflix, Internet, YouTube and Gallery+ app discovery shortcuts
 - [x] One-line Send/Enter and optional experimental Live input
 - [x] Source tests, GitHub Actions, HACS-compatible custom card and app repository layout
+- [x] Real loopback WebSocket authentication/validation tests, private JSON storage, and release ZIP exclusion tests
+- [ ] Fresh HACS and Home Assistant OS app installation on Raspberry Pi 5
+- [ ] Long-running pointer stability and reconnection after standby or Wi-Fi interruption
+- [ ] Upstream removal or patch of the unused sqlitedict dependency advisory (see SECURITY.md)
 - [ ] Confirm keyboard support in Netflix and YouTube (known limitation)
 - [ ] Multi-device compatibility and broader webOS model validation
 - [ ] HACS default catalog acceptance (custom repository works independently)

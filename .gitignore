@@ -10,3 +10,7 @@ node_modules/
 .DS_Store
 .release/
 .nyc_output/
+.venv/
+.coverage*
+webos-client-key.json
+options.json
