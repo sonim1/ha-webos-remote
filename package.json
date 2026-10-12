@@ -1,0 +1,15 @@
+{
+  "name": "ha-webos-remote",
+  "version": "1.0.0",
+  "private": false,
+  "description": "MIT-licensed LG webOS remote controller for Home Assistant",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "node --check src/lg-webos-remote-card.js && node --check ha-webos-remote.js",
+    "test:python": "python3 -m unittest discover -s tests -v",
+    "verify": "node scripts/verify.mjs && python3 -m unittest discover -s tests -v"
+  },
+  "devDependencies": {}
+}

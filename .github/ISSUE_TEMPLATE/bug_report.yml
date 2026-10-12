@@ -1,0 +1,25 @@
+name: Bug report
+description: Report an LG webOS Remote problem
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Please remove private IPs, MAC addresses, tokens, and LG pairing keys from logs or screenshots."
+  - type: input
+    id: version
+    attributes: {label: Project version, placeholder: "v1.0.0"}
+    validations: {required: true}
+  - type: input
+    id: tv
+    attributes: {label: LG TV model and webOS version}
+    validations: {required: true}
+  - type: dropdown
+    id: feature
+    attributes:
+      label: Affected feature
+      options: [Pairing, Pointer, Scrolling, Power, Text input, Quick Apps, Installation, Other]
+    validations: {required: true}
+  - type: textarea
+    id: details
+    attributes: {label: 'What happened?', description: 'Expected vs actual behavior, plus sanitized logs'}
+    validations: {required: true}

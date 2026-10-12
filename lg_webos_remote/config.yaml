@@ -1,0 +1,29 @@
+name: LG webOS Remote Bridge
+version: 1.0.0
+slug: lg_webos_remote
+url: https://github.com/sonim1/ha-webos-remote
+description: Independent, token-authenticated LG webOS pointer, remote and Wake-on-LAN bridge
+arch:
+  - aarch64
+  - amd64
+startup: services
+boot: auto
+init: false
+host_network: true
+hassio_api: false
+homeassistant_api: false
+auth_api: false
+map:
+  - data
+options:
+  tv_ip: ''
+  mac_address: ''
+  listen_port: 8788
+  broadcast_address: 255.255.255.255
+  auth_token: ''
+schema:
+  tv_ip: str
+  mac_address: str
+  listen_port: int
+  broadcast_address: str
+  auth_token: password

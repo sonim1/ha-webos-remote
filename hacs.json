@@ -1,0 +1,5 @@
+{
+  "name": "LG webOS Remote for Home Assistant",
+  "filename": "ha-webos-remote.js",
+  "render_readme": true
+}
