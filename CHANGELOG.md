@@ -4,6 +4,7 @@
 
 - Refreshed the remote screenshot, setup examples, troubleshooting and update documentation.
 - Added Bridge configuration help for the Home Assistant app's Documentation tab.
+- Documented intended LG webOS TV families, tested hardware, transport requirements and model-dependent features; generalized setup examples and Wake-on-LAN MAC guidance.
 
 ## v1.0.0
 

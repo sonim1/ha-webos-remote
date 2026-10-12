@@ -2,6 +2,8 @@
 
 A dashboard remote for LG webOS TVs with a Magic Touchpad, app shortcuts, English/Korean text input, and Wake-on-LAN.
 
+Designed for compatible **LG OLED, QNED, NanoCell, UHD and StanbyME webOS TVs**. See [device compatibility](docs/COMPATIBILITY.md) for requirements and tested hardware.
+
 **Current release: [v1.0.0](https://github.com/sonim1/ha-webos-remote/releases/tag/v1.0.0)** · **License: [MIT](LICENSE)**
 
 ## Remote preview
@@ -10,7 +12,7 @@ A dashboard remote for LG webOS TVs with a Magic Touchpad, app shortcuts, Englis
   <img src="docs/remote-preview.png" alt="LG webOS remote with app shortcuts, Magic Touchpad, navigation, volume and text input" width="360">
 </p>
 
-The keyboard panel is expanded in this preview. Toggle it with the Keyboard button.
+The keyboard panel is expanded in this preview. Toggle it with the Keyboard button. The TV name is configurable; the model shown is an example.
 
 ## Features
 
@@ -38,7 +40,7 @@ https://github.com/sonim1/ha-webos-remote
 
 ```yaml
 tv_ip: "YOUR_TV_IP"
-mac_address: "YOUR_TV_WIFI_MAC"
+mac_address: "YOUR_TV_NETWORK_MAC"
 listen_port: 8788
 broadcast_address: "255.255.255.255"
 auth_token: "YOUR_RANDOM_TOKEN"
@@ -53,7 +55,7 @@ python3 -c 'import secrets; print(secrets.token_urlsafe(32))'
 4. Turn on the TV and select **Start** in the Bridge app. Approve the TV's pairing prompt if shown.
 5. Check the app log for `LG webOS Remote listening on port 8788`. Pairing is stored privately and reused after restarts.
 
-The TV's Wi-Fi MAC is used for Wake-on-LAN. Keep the default broadcast address unless your network requires another value. See [Home Assistant repository installation](https://www.home-assistant.io/common-tasks/os/#installing-a-third-party-app-repository).
+Use the MAC of the TV's active network interface (Ethernet or Wi-Fi) for Wake-on-LAN. Wireless wake support varies by model; enable the TV's network wake setting where available. Keep the default broadcast address unless your network requires another value. See [power-on compatibility](docs/COMPATIBILITY.md#power-on) and [Home Assistant repository installation](https://www.home-assistant.io/common-tasks/os/#installing-a-third-party-app-repository).
 
 ### 2. Install the Dashboard card
 
@@ -77,7 +79,7 @@ Open your dashboard, select **Edit → Add card → Manual**, and paste:
 
 ```yaml
 type: custom:lg-webos-remote
-name: LG StanbyME Max 2
+name: Living Room TV
 url: ws://YOUR_HOME_ASSISTANT_IP:8788
 token: "YOUR_RANDOM_TOKEN"
 sensitivity: 1
@@ -102,7 +104,7 @@ Once connected, the card shows **TV On** or **TV Off · Wake ready**. Power can 
 | --- | --- |
 | **Connection error / Disconnected** | Start the Bridge app, check its log, and confirm the card URL uses the Home Assistant IP and configured port. |
 | **Invalid token** | Use the same token in the Bridge and card. The Bridge requires at least 40 characters. |
-| **TV offline** | Check the TV IP and network connectivity. Use Power to wake it; confirm the Wi-Fi MAC and TV remote power-on settings. |
+| **TV offline** | Check the TV IP and network connectivity. Use Power to wake it; confirm the active interface's MAC and TV remote power-on settings. |
 | **Pairing prompt** | Keep the TV awake and approve Allow. Preserve the app's data when updating. |
 | **Text does not appear** | Focus a compatible text field on the TV. Netflix and YouTube may not accept external text input. |
 | **HTTPS dashboard cannot connect** | Browsers can block plain `ws://` from HTTPS pages. Use a trusted WSS proxy. |
@@ -110,7 +112,16 @@ Once connected, the card shows **TV On** or **TV Off · Wake ready**. Power can 
 
 ## Compatibility
 
-The primary test device is an **LG StanbyME Max 2**. Development testing confirmed pairing, full-screen pointer movement, click, power-on/off, and English/Korean input in the TV browser. Other models and app-specific scroll/text behavior require further testing.
+This remote is not exclusive to StanbyME. It uses the LG webOS local control protocol without a model whitelist.
+
+| Device family | Project compatibility status |
+| --- | --- |
+| **LG StanbyME Max 2** | Tested during development: pairing, full-screen pointer movement, click, power-on/off and English/Korean input in the TV browser. |
+| **LG OLED, QNED, NanoCell and UHD webOS TVs** | Intended targets when they provide the required local control API and secure WebSocket port 3001. Individual models have not yet been tested by this project. |
+| **Other StanbyME models and other webOS displays** | Not yet verified; the webOS name alone does not establish compatibility. |
+| **LG NetCast TVs and non-webOS TVs** | Outside the supported platform. |
+
+**All models and all features are not guaranteed.** This Bridge requires `wss://TV:3001`; TVs offering only plain WebSocket port 3000 cannot connect to v1.0.0. Pointer/scroll behavior, installed apps, text input and network wake can vary by model, firmware and app. See the [compatibility guide and sources](docs/COMPATIBILITY.md).
 
 Live input is a beta feature. Long-running pointer stability, reconnection after network interruptions, and broader TV compatibility remain on the [roadmap](docs/ROADMAP.md).
 

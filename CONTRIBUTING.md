@@ -2,6 +2,8 @@
 
 Discuss larger features in an issue first. Include the TV model, firmware, project version, reproduction steps and sanitized logs when reporting a problem.
 
+For hardware compatibility reports, use the [device testing checklist](docs/COMPATIBILITY.md#reporting-device-results). Report each feature separately so successful pairing is not mistaken for full compatibility.
+
 ## Local setup
 
 Use Node.js 22+, Python 3.13+ and Git:
