@@ -19,7 +19,7 @@ LG identifies OLED, QNED, NanoCell and UHD as webOS TV families in its [webOS 6.
 ## Connection requirements
 
 - The TV must expose the LG webOS local control API and accept pairing.
-- v1.0.0 uses **secure WebSocket port 3001** for pairing and control. There is no fallback to plain WebSocket port 3000. A TV that only offers port 3000 cannot connect to this release.
+- The Bridge uses **secure WebSocket port 3001** for pairing and control. There is no fallback to plain WebSocket port 3000. A TV that only offers port 3000 cannot connect to this release.
 - The Bridge must reach the TV on the local network. Turn the TV on for initial pairing and approve its permission prompt. Enable **LG Connect Apps** where that setting exists.
 - The Dashboard card connects to the Bridge on port 8788 by default. This is separate from the TV's port 3001.
 

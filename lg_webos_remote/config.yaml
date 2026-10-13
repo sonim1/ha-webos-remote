@@ -1,5 +1,5 @@
 name: LG webOS Remote Bridge
-version: 1.0.0
+version: 1.0.1
 slug: lg_webos_remote
 url: https://github.com/sonim1/ha-webos-remote
 description: Independent, token-authenticated LG webOS pointer, remote and Wake-on-LAN bridge

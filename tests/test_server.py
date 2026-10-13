@@ -152,7 +152,24 @@ class BridgeTests(unittest.IsolatedAsyncioTestCase):
         self.bridge.client.launch_app.assert_awaited_once_with('fixture.browser')
         with patch.object(self.bridge, '_send_pointer', new_callable=AsyncMock) as pointer:
             await self.bridge._perform({'type': 'page', 'direction': 'down'})
-            pointer.assert_awaited_once_with('type:scroll\ndx:0\ndy:-12\n\n')
+            pointer.assert_awaited_once_with('type:scroll\ndx:0\ndy:-24\n\n')
+
+    async def test_authenticated_page_commands_send_doubled_native_scroll(self) -> None:
+        self.bridge.online = True
+        self.bridge.client = Mock()
+        pointer = AsyncMock()
+        self.bridge.pointer_session = pointer
+        async with connect(self.endpoint, proxy=None) as ws:
+            await self.authenticate(ws)
+            for direction in ('up', 'down'):
+                await ws.send(json.dumps({'type': 'page', 'direction': direction}))
+                await ws.send('{"type":"status"}')
+                reply = json.loads(await asyncio.wait_for(ws.recv(), timeout=3))
+                self.assertEqual(reply['type'], 'status')
+                self.assertTrue(reply['online'])
+        packets = [call.args[0] for call in pointer.send.await_args_list]
+        self.assertEqual(packets, ['type:scroll\ndx:0\ndy:24\n\n',
+                                   'type:scroll\ndx:0\ndy:-24\n\n'])
 
     async def test_connection_logs_keep_pairing_guidance_and_hide_raw_errors(self) -> None:
         for error, expected in ((PairingError('TV did not respond to pairing request'),

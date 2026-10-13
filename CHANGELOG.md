@@ -1,7 +1,10 @@
 # Changelog
 
-## Unreleased
+## v1.0.1
 
+- Increased the touchpad minimum height from 178px to 196px.
+- Doubled Page Up/Down scroll amounts while preserving direction and repeat timing.
+- Added an authenticated Bridge regression test for both native page-scroll packets.
 - Added a copyable AI-agent installation prompt and clearer prerequisites, setup checkpoints and first-use verification.
 - Refreshed the remote screenshot, setup examples, troubleshooting and update documentation.
 - Added Bridge configuration help for the Home Assistant app's Documentation tab.

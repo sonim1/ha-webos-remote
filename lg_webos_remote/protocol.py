@@ -62,7 +62,7 @@ def split_relative_move(dx: int, dy: int, max_delta: int = 40):
 def page_scroll_delta(direction: str) -> int:
     """StanbyME webOS scroll signs run opposite to visual Page Up/Down labels."""
     if direction == 'up':
-        return 12
+        return 24
     if direction == 'down':
-        return -12
+        return -24
     raise ValueError('Invalid page scroll direction')

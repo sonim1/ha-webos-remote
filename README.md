@@ -4,7 +4,7 @@ A dashboard remote for LG webOS TVs with a Magic Touchpad, app shortcuts, Englis
 
 Designed for compatible **LG OLED, QNED, NanoCell, UHD and StanbyME webOS TVs**. See [device compatibility](docs/COMPATIBILITY.md) for requirements and tested hardware.
 
-**Current release: [v1.0.0](https://github.com/sonim1/ha-webos-remote/releases/tag/v1.0.0)** · **License: [MIT](LICENSE)**
+**Current release: [v1.0.1](https://github.com/sonim1/ha-webos-remote/releases/tag/v1.0.1)** · **License: [MIT](LICENSE)**
 
 ## Install with an AI agent
 
@@ -123,7 +123,7 @@ Use the MAC of the TV's active network interface (Ethernet or Wi-Fi) for Wake-on
 
 1. Open **HACS → ⋮ → Custom repositories**.
 2. Add the same repository URL, select **Dashboard**, and select **Add**.
-3. Search HACS for **LG webOS Remote for Home Assistant**, open it, select **Download**, choose **v1.0.0**, and confirm the download. Reload the browser when prompted.
+3. Search HACS for **LG webOS Remote for Home Assistant**, open it, select **Download**, choose **v1.0.1**, and confirm the download. Reload the browser when prompted.
 
 This project is installed as a custom repository; it is not in the HACS default catalog. See [HACS custom repositories](https://www.hacs.dev/docs/faq/custom_repositories/).
 
@@ -195,7 +195,7 @@ This remote is not exclusive to StanbyME. It uses the LG webOS local control pro
 | **Other StanbyME models and other webOS displays** | Not yet verified; the webOS name alone does not establish compatibility. |
 | **LG NetCast TVs and non-webOS TVs** | Outside the supported platform. |
 
-**All models and all features are not guaranteed.** This Bridge requires `wss://TV:3001`; TVs offering only plain WebSocket port 3000 cannot connect to v1.0.0. Pointer/scroll behavior, installed apps, text input and network wake can vary by model, firmware and app. See the [compatibility guide and sources](docs/COMPATIBILITY.md).
+**All models and all features are not guaranteed.** This Bridge requires `wss://TV:3001`; TVs offering only plain WebSocket port 3000 cannot connect to this release. Pointer/scroll behavior, installed apps, text input and network wake can vary by model, firmware and app. See the [compatibility guide and sources](docs/COMPATIBILITY.md).
 
 Live input is a beta feature. Long-running pointer stability, reconnection after network interruptions, and broader TV compatibility remain on the [roadmap](docs/ROADMAP.md).
 

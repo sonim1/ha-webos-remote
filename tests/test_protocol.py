@@ -29,8 +29,8 @@ class ProtocolTests(unittest.TestCase):
             self.assertTrue(all(abs(a) <= 40 and abs(b) <= 40 for a, b in parts))
 
     def test_page_direction(self):
-        self.assertEqual(page_scroll_delta('up'),12)
-        self.assertEqual(page_scroll_delta('down'),-12)
+        self.assertEqual(page_scroll_delta('up'),24)
+        self.assertEqual(page_scroll_delta('down'),-24)
         with self.assertRaises(ValueError): page_scroll_delta('unknown')
 
     def test_keys(self):
