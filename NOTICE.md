@@ -19,3 +19,8 @@ The Home Assistant app installs, but does not vendor:
 You must preserve applicable notices when distributing bundled copies of any
 upstream libraries. LG and webOS are trademarks of their respective owners;
 LG webOS Remote for Home Assistant is not affiliated with LG or Home Assistant.
+
+The project website displays the original Home Assistant logomark to identify
+its target platform. The logo is a trademark and property of the Open Home
+Foundation and is not covered by this project's MIT license. Its source and
+upstream usage notice are documented in [website/assets/NOTICE.md](website/assets/NOTICE.md).

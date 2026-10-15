@@ -9,6 +9,7 @@ node_modules/
 *.token
 .DS_Store
 .release/
+.wrangler/
 .nyc_output/
 .venv/
 .coverage*

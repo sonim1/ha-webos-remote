@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="A Magic Touchpad remote for LG webOS TVs in Home Assistant. Learn how to install the Bridge app and HACS dashboard card, pair your TV, and get connected.">
+  <meta property="og:title" content="LG webOS Remote for Home Assistant">
+  <meta property="og:description" content="Your LG TV. Right at home. A local dashboard remote with pointer control, app shortcuts, text input and Wake-on-LAN.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://webos.royjen.com/">
+  <meta property="og:image" content="https://webos.royjen.com/docs/remote-preview.png">
+  <meta name="twitter:card" content="summary">
+  <link rel="canonical" href="https://webos.royjen.com/">
+  <title>LG webOS Remote — Your TV, right at home</title>
+  <script>
+    const previewTheme = new URLSearchParams(location.search).get('theme');
+    if (previewTheme === 'light' || previewTheme === 'dark') document.documentElement.dataset.theme = previewTheme;
+  </script>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --canvas:#fafbfd; --surface:#fff; --secondary:#f0f3f7; --ink:#182331;
+      --muted:#526174; --line:#d7dfe8; --accent:#315cbd; --accent-hover:#234795;
+      --accent-soft:#eaf0fc; --success:#226645; --code-bg:#111923; --code-ink:#eef4fe; --code-accent:#a6c1fc;
+      --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s6:24px; --s8:32px;
+      --s10:40px; --s12:48px; --s16:64px; --s20:80px; --s24:96px;
+      --radius-control:6px; --radius-panel:12px; --radius-stage:24px;
+      --text-small:15px; --text-body:18px; --text-code:14px; --text-title:40px; --text-subtitle:24px;
+      --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+      --mono:SFMono-Regular,Consolas,Menlo,monospace;
+      --motion:140ms;
+    }
+    @media(prefers-color-scheme:dark) {
+      :root:not([data-theme="light"]) {--canvas:#101720;--surface:#16202c;--secondary:#1c2938;--ink:#f0f4fa;--muted:#b4c0d0;--line:#39495e;--accent:#9ebcff;--accent-hover:#bdd0ff;--accent-soft:#243650;--success:#a4dcb8;}
+    }
+    :root[data-theme="dark"] {--canvas:#101720;--surface:#16202c;--secondary:#1c2938;--ink:#f0f4fa;--muted:#b4c0d0;--line:#39495e;--accent:#9ebcff;--accent-hover:#bdd0ff;--accent-soft:#243650;--success:#a4dcb8;}
+    * {box-sizing:border-box}
+    html {scroll-padding-top:var(--s6)}
+    body {margin:0;background:var(--canvas);color:var(--ink);font:var(--text-body)/1.65 var(--font);-webkit-font-smoothing:antialiased}
+    h1,h2,h3,p,figure {margin:0}
+    h1,h2,h3 {font-weight:650;text-wrap:balance}
+    h1 {font-size:clamp(44px,5.4vw,72px);line-height:1.04;letter-spacing:-.055em;max-width:10ch}
+    h2 {font-size:var(--text-title);line-height:1.15;letter-spacing:-.035em}
+    h3 {font-size:var(--text-subtitle);line-height:1.3;letter-spacing:-.025em}
+    p {max-width:62ch}
+    a {color:var(--accent);text-underline-offset:4px}
+    a:hover {color:var(--accent-hover)}
+    button,a,summary {touch-action:manipulation}
+    button {font:inherit;cursor:pointer}
+    a,button,summary {transition:background-color var(--motion),color var(--motion),opacity var(--motion)}
+    :focus-visible {outline:3px solid var(--accent);outline-offset:4px;border-radius:var(--radius-control)}
+    ::selection {background:var(--accent-soft);color:var(--ink)}
+    .container {width:min(1120px,calc(100% - 64px));margin-inline:auto}
+    .skip {position:absolute;left:var(--s4);top:-80px;z-index:10;background:var(--surface);padding:var(--s3) var(--s4)}
+    .skip:focus {top:var(--s4)}
+    .site-header {display:flex;align-items:center;justify-content:space-between;gap:var(--s8);padding-block:var(--s6);border-bottom:1px solid var(--line)}
+    .brand {display:flex;align-items:center;gap:var(--s3);text-decoration:none;color:var(--ink);font-size:var(--text-small);line-height:1.4}
+    .brand strong {display:block;font-size:var(--text-body);letter-spacing:-.025em}
+    .brand span {color:var(--ink);font-size:var(--text-body);font-weight:600}
+    .brand-mark {width:44px;height:44px;display:grid;place-items:center;border:1px solid var(--line);border-radius:var(--radius-panel);background:var(--surface);color:var(--ink);flex-shrink:0}
+    svg {width:24px;height:24px;vertical-align:middle;flex-shrink:0}
+    nav {display:flex;align-items:center;gap:var(--s6);font-size:var(--text-small)}
+    nav a {min-height:44px;display:inline-flex;align-items:center;color:var(--muted);text-decoration:none}
+    nav a:hover {color:var(--ink)}
+    .github-link {gap:var(--s2)}
+    .hero {display:grid;grid-template-columns:1.05fr 1fr;gap:var(--s16);align-items:center;padding-block:var(--s16)}
+    .platform-label {display:flex;align-items:center;gap:var(--s3);font-size:var(--text-subtitle);line-height:1.3;font-weight:650;letter-spacing:-.025em;margin-bottom:var(--s6)}
+    .platform-label img {display:block;width:56px;height:56px;flex-shrink:0}
+    .eyebrow {font-size:var(--text-small);font-weight:600;display:flex;align-items:center;gap:var(--s3);color:var(--muted);margin-bottom:var(--s6)}
+    .release {color:var(--accent);background:var(--accent-soft);padding:var(--s1) var(--s2);border-radius:var(--radius-control);text-decoration:none;font-family:var(--mono);font-size:var(--text-code)}
+    .hero .intro {color:var(--muted);margin-top:var(--s6);max-width:39ch}
+    .actions {display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s8)}
+    .button {display:inline-flex;align-items:center;justify-content:center;gap:var(--s2);min-height:48px;padding:var(--s3) var(--s6);border-radius:var(--radius-control);border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:var(--text-small);font-weight:600;text-decoration:none;line-height:1.4}
+    .button:hover {background:var(--secondary);color:var(--ink)}
+    .button:active {opacity:.8}
+    .button.primary {background:var(--ink);border-color:var(--ink);color:var(--canvas)}
+    .button.primary:hover {opacity:.85}
+    .button svg {width:18px;height:18px}
+    .hero-note {font-size:var(--text-small);color:var(--muted);margin-top:var(--s6)}
+    .hero-note a {color:inherit}
+    .product-stage {display:grid;justify-items:center;gap:var(--s4);background:var(--secondary);border:1px solid var(--line);border-radius:var(--radius-stage);padding:var(--s8) var(--s6) var(--s6)}
+    .preview-label {display:flex;align-items:center;gap:var(--s2);color:var(--muted);font-size:var(--text-small);width:100%;justify-content:center}
+    .preview-label svg {width:18px;height:18px}
+    .product-stage img {width:min(100%,264px);height:auto;display:block;border-radius:var(--radius-panel)}
+    figcaption {font-size:var(--text-small);color:var(--muted);text-align:center;max-width:32ch}
+    .trust-row {display:flex;justify-content:space-between;gap:var(--s6);flex-wrap:wrap;padding-block:var(--s6);border-top:1px solid var(--line);border-bottom:1px solid var(--line);font-size:var(--text-small);color:var(--muted)}
+    .trust-row strong {color:var(--ink);font-weight:600}
+    .section {padding-block:var(--s24);border-bottom:1px solid var(--line)}
+    .section-heading {display:flex;justify-content:space-between;align-items:end;gap:var(--s8);margin-bottom:var(--s12)}
+    .section-heading p {color:var(--muted);max-width:35ch}
+    .section-label {font-size:var(--text-small);color:var(--muted);font-family:var(--mono);margin-bottom:var(--s4)}
+    .features {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s10)}
+    .feature .icon {display:grid;place-items:center;width:48px;height:48px;margin-bottom:var(--s6);background:var(--secondary);border-radius:var(--radius-panel);color:var(--ink)}
+    .feature h3 {font-size:var(--text-body);margin-bottom:var(--s3)}
+    .feature p {color:var(--muted);font-size:var(--text-small);line-height:1.65}
+    .flow {display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:var(--s4);padding:var(--s8);border:1px solid var(--line);border-radius:var(--radius-panel);background:var(--surface);margin-bottom:var(--s8)}
+    .flow-node {display:flex;align-items:center;gap:var(--s4);min-width:0}
+    .flow-node strong,.flow-node span {display:block}
+    .flow-node strong {font-size:var(--text-small)}
+    .flow-node span {font-size:var(--text-small);color:var(--muted)}
+    .flow-arrow {color:var(--muted)}
+    .requirements {color:var(--muted);font-size:var(--text-small);margin-bottom:var(--s8)}
+    .repo-bar {display:flex;align-items:center;justify-content:space-between;gap:var(--s4);background:var(--secondary);border:1px solid var(--line);border-radius:var(--radius-panel);padding:var(--s4) var(--s6);margin-bottom:var(--s12)}
+    .repo-bar p {font-size:var(--text-small);color:var(--muted)}
+    .repo-bar code {font-size:var(--text-code);color:var(--ink);font-family:var(--mono);overflow-wrap:anywhere}
+    .steps {list-style:none;padding:0;margin:0;counter-reset:steps}
+    .step {display:grid;grid-template-columns:260px minmax(0,1fr);gap:var(--s12);padding-block:var(--s10);border-top:1px solid var(--line);counter-increment:steps;scroll-margin-top:var(--s6)}
+    .step-title::before {content:"0" counter(steps);display:block;font:var(--text-small)/1.5 var(--mono);color:var(--muted);margin-bottom:var(--s4)}
+    .step-title p {font-size:var(--text-small);color:var(--muted);margin-top:var(--s3)}
+    .step-body>p,.step-body>ol,.step-body>div {margin-bottom:var(--s6)}
+    .step-body> :last-child {margin-bottom:0}
+    .step-body ol {padding-left:var(--s6);margin-top:0}
+    .step-body li {padding-left:var(--s1);margin-bottom:var(--s3)}
+    .route {display:inline;font-size:var(--text-small);font-weight:600;color:var(--ink)}
+    .codebox {background:var(--code-bg);color:var(--code-ink);border-radius:var(--radius-panel);overflow:hidden}
+    .code-head {display:flex;justify-content:space-between;align-items:center;gap:var(--s4);padding:var(--s3) var(--s6);border-bottom:1px solid var(--line);font-size:var(--text-small);color:var(--code-accent)}
+    .copy {min-height:44px;padding:var(--s2) var(--s3);border:1px solid var(--line);border-radius:var(--radius-control);font-size:var(--text-small);background:transparent;color:inherit;white-space:nowrap}
+    .copy:hover {opacity:.75}
+    pre {margin:0;padding:var(--s6);font:var(--text-code)/1.75 var(--mono);white-space:pre-wrap;overflow-wrap:anywhere}
+    code {font-family:var(--mono)}
+    .helper {font-size:var(--text-small);color:var(--muted);margin-top:var(--s4)}
+    .helper strong {color:var(--ink)}
+    .check {display:flex;align-items:flex-start;gap:var(--s3);padding:var(--s4);background:var(--accent-soft);border-radius:var(--radius-control);font-size:var(--text-small)}
+    .check svg {color:var(--accent);width:20px;height:20px;margin-top:var(--s1)}
+    .agent {display:grid;grid-template-columns:1fr 1fr;gap:var(--s12);margin-top:var(--s12);padding:var(--s8);background:var(--secondary);border:1px solid var(--line);border-radius:var(--radius-panel)}
+    .agent h3 {margin-bottom:var(--s4)}
+    .agent p {font-size:var(--text-small);color:var(--muted)}
+    .agent details {min-width:0}
+    .agent pre {padding:var(--s4) 0;font-size:var(--text-code)}
+    .agent .copy {margin-top:var(--s4)}
+    .compatibility {display:grid;grid-template-columns:1fr 1.2fr;gap:var(--s16)}
+    .compatibility p {color:var(--muted);margin-top:var(--s6)}
+    .device-list {margin:0;padding:0;list-style:none}
+    .device-list li {padding-block:var(--s6);border-bottom:1px solid var(--line)}
+    .device-list li:first-child {padding-top:0}
+    .device-list strong {display:block;font-size:var(--text-body)}
+    .device-list p {font-size:var(--text-small);margin-top:var(--s2)}
+    .status {display:inline-block;font-size:var(--text-small);font-weight:600;color:var(--muted);margin-bottom:var(--s2)}
+    .status.tested {color:var(--success)}
+    .faq {display:grid;grid-template-columns:1fr 1.2fr;gap:var(--s16)}
+    details {border-bottom:1px solid var(--line)}
+    summary {padding-block:var(--s4);min-height:48px;cursor:pointer;font-weight:600;font-size:var(--text-body)}
+    details>p {padding-bottom:var(--s6);color:var(--muted);font-size:var(--text-small)}
+    details[open] summary {color:var(--accent)}
+    .footer {padding-block:var(--s10);display:flex;align-items:start;justify-content:space-between;gap:var(--s8);font-size:var(--text-small);color:var(--muted)}
+    .footer p {max-width:57ch}
+    .footer-links {display:flex;flex-wrap:wrap;gap:var(--s4)}
+    .footer-links a {min-height:44px;display:flex;align-items:center;color:inherit}
+    .copy-status {font-size:var(--text-small);color:var(--muted);margin-top:var(--s3);min-height:24px}
+    @media(max-width:1050px) {.hero{gap:var(--s8)}.step{grid-template-columns:220px minmax(0,1fr)}}
+    @media(max-width:899px) {
+      .hero{grid-template-columns:1fr;gap:var(--s12);padding-block:var(--s12)}
+      h1{max-width:13ch}.hero .intro{max-width:46ch}.product-stage{width:100%;max-width:560px;justify-self:center}
+      .product-stage img{width:min(100%,264px)}.section-heading{align-items:start;flex-direction:column;gap:var(--s6)}
+      .section-heading p{max-width:62ch}.step{grid-template-columns:1fr;gap:var(--s6)}
+      .step-title{display:grid;grid-template-columns:40px 1fr;align-items:start;gap:0 var(--s4)}
+      .step-title::before{grid-row:1/3;margin-top:var(--s1)}.step-title p{grid-column:2}
+      .compatibility,.faq{grid-template-columns:1fr;gap:var(--s8)}
+    }
+    @media(max-width:759px) {
+      .container{width:calc(100% - 48px)}.site-header{gap:var(--s4);flex-wrap:wrap;padding-block:var(--s4)}
+      nav{width:100%;justify-content:space-between;gap:var(--s3)}nav a{font-size:var(--text-small)}
+      nav .github-link svg{display:none}.section{padding-block:var(--s16)}h2{font-size:32px}
+      .features{grid-template-columns:1fr;gap:var(--s8)}.feature{display:grid;grid-template-columns:48px 1fr;gap:0 var(--s4)}
+      .feature .icon{grid-row:1/3;margin-bottom:0}.feature p{grid-column:2}.feature h3{margin-top:var(--s1)}
+      .trust-row{justify-content:flex-start;gap:var(--s3) var(--s6)}.trust-row span{width:calc(50% - 12px)}
+      .flow{grid-template-columns:1fr;padding:var(--s6);gap:var(--s4)}.flow-arrow{transform:rotate(90deg);margin-left:0}
+      .flow-node{gap:var(--s4)}.repo-bar{align-items:start;flex-direction:column;padding:var(--s4)}
+      .agent{grid-template-columns:1fr;gap:var(--s6);padding:var(--s6)}.footer{flex-direction:column;gap:var(--s4)}
+      .code-head{padding:var(--s3) var(--s4)}pre{padding:var(--s4)}
+    }
+    @media(prefers-reduced-motion:reduce) {a,button,summary{transition:none}}
+  </style>
+</head>
+<body>
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <symbol id="tv" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 21h8m-4-4v4" stroke="currentColor" stroke-width="2" fill="none"/></symbol>
+    <symbol id="arrow" viewBox="0 0 24 24"><path d="M4 12h16m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="pointer" viewBox="0 0 24 24"><path d="m5 3 14 9-7 2-3 7L5 3Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="grid" viewBox="0 0 24 24"><path d="M4 4h6v6H4zm10 0h6v6h-6zM4 14h6v6H4zm10 0h6v6h-6z" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></symbol>
+    <symbol id="keyboard" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M6 9h1m4 0h1m4 0h1M6 12h1m4 0h1m4 0h1M7 16h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="bridge" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="14" width="18" height="7" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M7 6h2m-2 11h2m5-11h3m-3 11h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+    <symbol id="check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="github" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.86c-2.78.6-3.37-1.18-3.37-1.18-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.52 2.34 1.08 2.91.82.09-.64.35-1.08.64-1.33-2.22-.25-4.55-1.11-4.55-4.94 0-1.09.39-1.99 1.03-2.69-.1-.26-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.03A9.56 9.56 0 0 1 12 6.82c.85 0 1.71.12 2.51.34 1.91-1.3 2.75-1.03 2.75-1.03.55 1.38.2 2.39.1 2.65.64.7 1.03 1.6 1.03 2.69 0 3.84-2.34 4.69-4.57 4.94.36.31.68.92.68 1.85v2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2Z"/></symbol>
+  </svg>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header container">
+    <a class="brand" href="#main" aria-label="LG webOS Remote, top of page">
+      <div class="brand-mark"><svg aria-hidden="true"><use href="#tv"/></svg></div>
+      <div><strong>webOS Remote</strong><span>for Home Assistant</span></div>
+    </a>
+    <nav aria-label="Main navigation">
+      <a href="#features">Features</a><a href="#install">Installation</a><a href="#compatibility">Compatibility</a>
+      <a class="github-link" href="https://github.com/sonim1/ha-webos-remote"><svg aria-hidden="true"><use href="#github"/></svg>GitHub</a>
+    </nav>
+  </header>
+  <main id="main">
+    <section class="hero container" aria-labelledby="hero-title">
+      <div>
+        <div class="platform-label"><img src="./assets/home-assistant.svg" width="56" height="56" alt="" aria-hidden="true"><span>For Home Assistant</span></div>
+        <div class="eyebrow">A community-built remote <a class="release" href="https://github.com/sonim1/ha-webos-remote/releases/tag/v1.0.1">v1.0.1</a></div>
+        <h1 id="hero-title">Your LG TV.<br>Right at home.</h1>
+        <p class="intro">Turn your Home Assistant dashboard into a remote you actually want to use. A Magic Touchpad, your favorite apps, and a keyboard. All in one place.</p>
+        <div class="actions">
+          <a class="button primary" href="#install">Install the remote <svg aria-hidden="true"><use href="#arrow"/></svg></a>
+          <a class="button" href="https://github.com/sonim1/ha-webos-remote">View on GitHub <svg aria-hidden="true"><use href="#github"/></svg></a>
+        </div>
+        <p class="hero-note">Independent community project. Free and open source.<br>For compatible LG webOS TVs and <a href="#install">Home Assistant OS</a>. Runs on your local network.</p>
+      </div>
+      <figure class="product-stage">
+        <div class="preview-label"><svg aria-hidden="true"><use href="#grid"/></svg>Your dashboard. Your remote.</div>
+        <img src="../docs/remote-preview.png" width="460" height="1000" fetchpriority="high" alt="LG webOS Remote card with power, Back, Home, app shortcuts, Magic Touchpad, Page Up and Down, D-pad, volume and English/Korean text input.">
+        <figcaption>Static UI preview with the keyboard open.<br>No TV is connected to this page.</figcaption>
+      </figure>
+    </section>
+    <div class="trust-row container" aria-label="Project facts">
+      <span><strong>MIT</strong> licensed</span><span><strong>Local</strong> TV control</span><span><strong>HACS</strong> dashboard card</span><span><strong>Raspberry Pi 5</strong> ready</span>
+    </div>
+    <section class="section container" id="features" aria-labelledby="features-title">
+      <div class="section-heading">
+        <div><p class="section-label">01 / THE REMOTE</p><h2 id="features-title">Less hunting for buttons.<br>More watching.</h2></div>
+        <p>The everyday controls, with a touchpad for the moments a D-pad isn’t enough.</p>
+      </div>
+      <div class="features">
+        <article class="feature"><div class="icon"><svg aria-hidden="true"><use href="#pointer"/></svg></div><h3>A pointer, not just arrows.</h3><p>Swipe to move, tap to click, and scroll with two fingers or a mouse wheel. Dedicated Page Up/Down buttons and 1×, 2×, 4× sensitivity make browsing easier.</p></article>
+        <article class="feature"><div class="icon"><svg aria-hidden="true"><use href="#grid"/></svg></div><h3>Straight to your favorites.</h3><p>Netflix, Internet, YouTube and Gallery+ shortcuts use your TV’s installed apps. Power, volume, mute, Home and navigation stay close at hand.</p></article>
+        <article class="feature"><div class="icon"><svg aria-hidden="true"><use href="#keyboard"/></svg></div><h3>Type with a real keyboard.</h3><p>Send English or Korean text with Enter or Send. Tested in the TV browser; text input depends on the app. Live typing is experimental.</p></article>
+      </div>
+    </section>
+    <section class="section container" id="install" aria-labelledby="install-title">
+      <div class="section-heading">
+        <div><p class="section-label">02 / GET CONNECTED</p><h2 id="install-title">Two small installs.<br>One useful remote.</h2></div>
+        <p>The card is what you see. The Bridge is what talks to your TV. You need both.</p>
+      </div>
+      <div class="flow" aria-label="The dashboard card connects to the Bridge app, which connects to your LG webOS TV">
+        <div class="flow-node"><svg aria-hidden="true"><use href="#grid"/></svg><div><strong>Dashboard card</strong><span>Installed through HACS</span></div></div>
+        <svg class="flow-arrow" aria-hidden="true"><use href="#arrow"/></svg>
+        <div class="flow-node"><svg aria-hidden="true"><use href="#bridge"/></svg><div><strong>Bridge app</strong><span>Runs in Home Assistant</span></div></div>
+        <svg class="flow-arrow" aria-hidden="true"><use href="#arrow"/></svg>
+        <div class="flow-node"><svg aria-hidden="true"><use href="#tv"/></svg><div><strong>Your LG webOS TV</strong><span>Paired on your local network</span></div></div>
+      </div>
+      <p class="requirements"><strong>Before you start:</strong> Home Assistant OS on aarch64 or amd64, an administrator account, a compatible TV, and <a href="https://www.hacs.dev/docs/use/download/download/">HACS installed</a> and <a href="https://www.hacs.dev/docs/use/configuration/basic/">configured</a>. Keep the TV, Home Assistant and dashboard device on a network where they can reach each other. Container/Core installations have no app store for this guide.</p>
+      <div class="repo-bar">
+        <div><p>Use this repository URL for both installations</p><code id="repo-url">https://github.com/sonim1/ha-webos-remote</code></div>
+        <button class="button" type="button" data-copy="repo-url" aria-label="Copy the GitHub repository URL">Copy repository URL</button>
+      </div>
+      <ol class="steps">
+        <li class="step" id="bridge-step">
+          <div class="step-title"><h3>Install the Bridge.</h3><p>The connection between Home Assistant and your TV.</p></div>
+          <div class="step-body">
+            <ol>
+              <li>Open <span class="route">Settings → Apps → Install app → ⋮ → Repositories</span>. Add the repository URL above. Older versions call Apps “Add-ons”.</li>
+              <li>Find <strong>LG webOS Remote Bridge</strong> and select <strong>Install</strong>. Open its <strong>Configuration</strong> tab, fill in these fields, and save.</li>
+            </ol>
+            <div>
+              <div class="codebox"><div class="code-head"><span>Bridge configuration</span><button class="copy" type="button" data-copy="bridge-yaml" aria-label="Copy Bridge configuration YAML">Copy YAML</button></div><pre id="bridge-yaml">tv_ip: "YOUR_TV_IP"
+mac_address: "YOUR_TV_NETWORK_MAC"
+listen_port: 8788
+broadcast_address: "255.255.255.255"
+auth_token: "YOUR_RANDOM_TOKEN"</pre></div>
+              <p class="helper">Find the TV IP and the active Wi-Fi or Ethernet MAC in the TV’s network settings or router. Use a <strong>new random token of at least 40 characters</strong>, not a Home Assistant API token. Keep it private.</p>
+            </div>
+            <details><summary>How do I generate the token?</summary><p>Run this on a computer with Python. Copy the result privately into the Bridge and card configuration; do not paste it into a chat or screenshot.</p><div class="codebox"><div class="code-head"><span>Run locally</span><button class="copy" type="button" data-copy="token-command" aria-label="Copy the token generation command">Copy command</button></div><pre id="token-command">python3 -c 'import secrets; print(secrets.token_urlsafe(32))'</pre></div></details>
+            <p>Turn on your TV, <strong>Start</strong> the Bridge, and approve the pairing prompt on the TV. Enable <strong>Start on boot</strong> in the app’s Info tab.</p>
+            <div class="check"><svg aria-hidden="true"><use href="#check"/></svg><span><strong>Check the log:</strong> “LG webOS Remote listening on port 8788” means the Bridge is running. “TV paired/connected” confirms the TV connection.</span></div>
+            <p class="helper"><a href="https://www.home-assistant.io/common-tasks/os/#installing-a-third-party-app-repository">Official Home Assistant repository instructions</a></p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-title"><h3>Install the card.</h3><p>The remote you’ll add to your dashboard.</p></div>
+          <div class="step-body">
+            <ol>
+              <li>Open <span class="route">HACS → ⋮ → Custom repositories</span>. Add the same repository URL and choose <strong>Dashboard</strong> as the category.</li>
+              <li>Find <strong>LG webOS Remote for Home Assistant</strong>. Select <strong>Download</strong>, choose <strong>v1.0.1</strong>, and confirm.</li>
+              <li><strong>Reload your browser</strong> when prompted so it loads the new card.</li>
+            </ol>
+            <details><summary>If the card resource wasn’t added automatically</summary><p>Open <strong>Settings → Dashboards → Resources</strong> and add the URL below as a <strong>JavaScript module</strong>, once. If Resources is hidden, enable Advanced mode in your user profile. YAML-managed dashboards register this URL with <code>type: module</code> in their resource configuration.</p><div class="codebox"><div class="code-head"><span>Card resource URL</span><button class="copy" type="button" data-copy="resource-url" aria-label="Copy the card resource URL">Copy URL</button></div><pre id="resource-url">/hacsfiles/ha-webos-remote/ha-webos-remote.js</pre></div></details>
+            <p class="helper">This is a custom repository, not a default HACS catalog listing. <a href="https://www.hacs.dev/docs/faq/custom_repositories/">Official HACS instructions</a></p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-title"><h3>Add your remote.</h3><p>Connect the card to the Bridge and check it works.</p></div>
+          <div class="step-body">
+            <p>Open your dashboard and select <span class="route">Edit → Add card → Manual</span>. Paste the YAML below, replace the placeholders, and save.</p>
+            <div>
+              <div class="codebox"><div class="code-head"><span>Dashboard card YAML</span><button class="copy" type="button" data-copy="card-yaml" aria-label="Copy dashboard card configuration YAML">Copy YAML</button></div><pre id="card-yaml">type: custom:lg-webos-remote
+name: Living Room TV
+url: ws://YOUR_HOME_ASSISTANT_IP:8788
+token: "YOUR_RANDOM_TOKEN"
+sensitivity: 1
+scrollSensitivity: 1</pre></div>
+              <p class="helper"><strong>Use the Home Assistant IP in the card URL, not the TV IP.</strong> The token must exactly match the Bridge’s <code>auth_token</code>. Don’t add the dashboard path or port 8123. “Visual editor not supported” is expected.</p>
+            </div>
+            <div class="check"><svg aria-hidden="true"><use href="#check"/></svg><span><strong>Try it:</strong> with the TV on, look for “TV On”. Test Home and volume, then move and click the pointer in the TV browser. Test power-off and Wake-on-LAN separately.</span></div>
+            <p class="helper">Using an HTTPS dashboard? Use a trusted <code>wss://</code> proxy route. Browsers may block plain <code>ws://</code> from an HTTPS page. <a href="https://github.com/sonim1/ha-webos-remote/blob/main/SECURITY.md">Connection and security notes</a></p>
+          </div>
+        </li>
+      </ol>
+      <div class="agent">
+        <div><p class="section-label">PREFER A GUIDED SETUP?</p><h3>Bring your AI assistant.</h3><p>Give it the project context and the installation checklist. An agent with Home Assistant access can help with setup; otherwise, it can guide you through the UI.</p></div>
+        <div><details><summary>Show the installation prompt</summary><pre id="agent-prompt">Help me install LG webOS Remote for Home Assistant:
+https://github.com/sonim1/ha-webos-remote
+
+Read the current README, docs/COMPATIBILITY.md, docs/UPDATING.md and SECURITY.md first. Use the stable release.
+
+Inspect my Home Assistant installation, CPU architecture, HACS, existing Bridge/card installs and HTTP/HTTPS access. This app guide requires Home Assistant OS on aarch64 or amd64.
+
+Install BOTH the LG webOS Remote Bridge app and the HACS Dashboard card using the repository above. Ask only for missing setup information. Have me turn on the TV and approve pairing.
+
+Generate a random Bridge auth_token locally with at least 40 characters. Configure the TV IP and active interface MAC in the Bridge. Use the Home Assistant host and Bridge port 8788 in the card, with the same token. For HTTPS, use a trusted WSS route.
+
+Preserve settings and pairing data. Back up before replacing an install; ask before removing any existing Bridge or changing shared network settings. Never expose tokens, pairing keys or private device details in chat, screenshots or commits. Do not expose the Bridge to the internet or run competing Bridges.
+
+Verify card connection, Home, volume, full-screen pointer movement, power-off and Wake-on-LAN separately. Report observed, failed and untested results honestly. If you lack access, give me exact UI steps instead of claiming completion.</pre></details><button class="copy" type="button" data-copy="agent-prompt" aria-label="Copy the AI assistant installation prompt">Copy installation prompt</button></div>
+      </div>
+      <p id="copy-status" class="copy-status" role="status" aria-live="polite"></p>
+    </section>
+    <section class="section container compatibility" id="compatibility" aria-labelledby="compatibility-title">
+      <div><p class="section-label">03 / YOUR TV</p><h2 id="compatibility-title">Made for webOS.<br>Tested honestly.</h2><p>This isn’t limited to StanbyME. It uses LG’s local webOS control protocol, with no model whitelist. Features still depend on your TV, firmware and apps.</p><p><a href="https://github.com/sonim1/ha-webos-remote/blob/main/docs/COMPATIBILITY.md">Read the compatibility guide <span aria-hidden="true">→</span></a></p></div>
+      <ul class="device-list">
+        <li><span class="status tested">Tested during development</span><strong>LG StanbyME Max 2</strong><p>Pairing, full-screen pointer movement, click, power-on/off and English/Korean input in the TV browser.</p></li>
+        <li><span class="status">Intended compatible targets · not individually tested</span><strong>LG OLED, QNED, NanoCell &amp; UHD webOS TVs</strong><p>Require the local control API and secure WebSocket port 3001. Individual model support is not guaranteed.</p></li>
+        <li><span class="status">Check before installing</span><strong>Other webOS displays</strong><p>Other StanbyME models are unverified. TVs offering only port 3000, LG NetCast and non-webOS TVs cannot use this release.</p></li>
+      </ul>
+    </section>
+    <section class="section container faq" aria-labelledby="faq-title">
+      <div><p class="section-label">04 / A LITTLE HELP</p><h2 id="faq-title">A few things<br>worth knowing.</h2><p class="helper">More answers in the <a href="https://github.com/sonim1/ha-webos-remote#troubleshooting">troubleshooting guide</a>.</p></div>
+      <div>
+        <details><summary>The card says “Connection error”. What now?</summary><p>Start the Bridge app and check its log. The card URL must point to your Home Assistant host on the Bridge’s port, normally 8788. A turned-off TV should not prevent the card from connecting to a running Bridge. For HTTPS dashboards, check your WSS route.</p></details>
+        <details><summary>Can it turn my TV on?</summary><p>Power sends Wake-on-LAN when the TV is offline. Use the active network interface’s MAC and enable the TV’s network wake setting where available. Support varies by model and connection. “TV Off · Wake ready” means the Bridge is reachable; it does not guarantee the TV will wake.</p></details>
+        <details><summary>Does typing work in Netflix and YouTube?</summary><p>Those apps may use custom keyboards that reject external text. English and Korean text insertion were tested in the TV browser. Focus a compatible text field first. Live input is experimental.</p></details>
+        <details><summary>How do I update it safely?</summary><p>Update the Bridge app and HACS card separately, preserve app data and pairing, and reload the dashboard. Do not run an old and new Bridge together. Follow the <a href="https://github.com/sonim1/ha-webos-remote/blob/main/docs/UPDATING.md">update and rollback guide</a> when changing installation sources.</p></details>
+        <details><summary>Is this an official LG or Home Assistant product?</summary><p>No. It’s an independent MIT-licensed community project, unaffiliated with LG Electronics or Home Assistant. Use it on a trusted local network, keep tokens private, and never expose the Bridge directly to the internet. Plain WebSocket traffic is unencrypted. See the <a href="https://github.com/sonim1/ha-webos-remote/blob/main/SECURITY.md">security notes and dependency advisory</a>.</p></details>
+      </div>
+    </section>
+  </main>
+  <footer class="footer container">
+    <p><strong>LG webOS Remote for Home Assistant</strong><br>Independent, open source, MIT licensed.<br>A community project, unaffiliated with LG Electronics or Home Assistant.<br>Home Assistant name and logo belong to the Open Home Foundation.</p>
+    <div class="footer-links"><a href="https://github.com/sonim1/ha-webos-remote">GitHub</a><a href="https://github.com/sonim1/ha-webos-remote#installation">Full guide</a><a href="https://github.com/sonim1/ha-webos-remote/issues">Report an issue</a><a href="https://github.com/sonim1/ha-webos-remote/blob/main/LICENSE">License</a></div>
+  </footer>
+  <script>
+    const copyStatus = document.getElementById('copy-status');
+    document.querySelectorAll('[data-copy]').forEach(button => {
+      const originalLabel = button.textContent;
+      let resetTimer;
+      button.addEventListener('click', async () => {
+        const source = document.getElementById(button.dataset.copy);
+        clearTimeout(resetTimer);
+        try {
+          await navigator.clipboard.writeText(source.textContent.trim());
+          button.textContent = 'Copied';
+          button.setAttribute('aria-label', 'Copied. ' + button.getAttribute('aria-label').replace(/^Copied\. /, ''));
+          copyStatus.textContent = originalLabel.replace(/^Copy /, '') + ' copied. Replace the example placeholders before saving.';
+        } catch {
+          if (source.closest('details')) source.closest('details').open = true;
+          const selection = window.getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(source);
+          selection.removeAllRanges();
+          selection.addRange(range);
+          button.textContent = 'Select & copy';
+          copyStatus.textContent = 'Clipboard access was unavailable. The text is selected; use your device’s copy command.';
+        }
+        resetTimer = setTimeout(() => {button.textContent = originalLabel;button.setAttribute('aria-label',button.getAttribute('aria-label').replace(/^Copied\. /,''));}, 2500);
+      });
+    });
+  </script>
+</body>
+</html>
