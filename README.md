@@ -6,6 +6,8 @@ Designed for compatible **LG OLED, QNED, NanoCell, UHD and StanbyME webOS TVs**.
 
 **Current release: [v1.0.1](https://github.com/sonim1/ha-webos-remote/releases/tag/v1.0.1)** · **License: [MIT](LICENSE)**
 
+**[Website and step-by-step installation guide](https://webos.royjen.com/)**
+
 ## Install with an AI agent
 
 Copy this prompt into your AI assistant or coding agent. An agent with access to your Home Assistant can help perform the setup; otherwise, it can guide you through the same steps. Follow the [manual installation guide](#installation) below if you prefer.

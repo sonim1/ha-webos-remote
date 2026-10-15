@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+- Added GitHub Actions website checks for pull requests and automatic Cloudflare deployment from `main`, with a checked build, scoped secrets and public asset verification.
+- Migrated website deployment to the Cloudflare CLI (`cf`) with typed configuration, pinned tooling and explicit version rollback instructions.
+- Made Home Assistant identification more prominent on the website using the official logomark, a hero platform label and a stronger header subtitle; preserved non-affiliation and third-party notices.
+- Added a public project website at https://webos.royjen.com/ with a remote preview, step-by-step Bridge and HACS installation, copyable examples, compatibility notes and an AI-agent setup prompt.
+- Added an isolated Cloudflare Workers Static Assets build and custom-domain deployment configuration for the website.
+
 ## v1.0.1
 
 - Increased the touchpad minimum height from 178px to 196px.
